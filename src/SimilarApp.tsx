@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import LoadingScreen from './components/LoadingScreen'
-import SimilaritySlider from './components/SimilaritySlider'
-import TextComparison from './components/TextComparison'
-import { useCreateRandomMatch, useMatch, useUpdateMatchResult } from './data/matches'
+import LoadingScreen from '../components/LoadingScreen'
+import SimilaritySlider from '../components/SimilaritySlider'
+import TextComparison from '../components/TextComparison'
+import { useCreateRandomMatch, useMatch, useUpdateMatchResult } from '../data/matches'
+import './App.css'
 
 // Create a client
 const queryClient = new QueryClient()
