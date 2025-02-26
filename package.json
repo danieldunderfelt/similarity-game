@@ -3,15 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "bun './**/*.html'",
-    "build": "bun build --target=browser SimilarApp.html --outdir dist"
-  },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
     "@t3-oss/env-core": "^0.12.0",
     "@tanstack/react-query": "^5.66.9",
-    "bun-plugin-tailwind": "^0.0.14",
     "lucide-react": "^0.476.0",
     "nanoid": "^5.1.2",
     "react": "19",
