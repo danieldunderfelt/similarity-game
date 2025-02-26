@@ -1,0 +1,12 @@
+.vscode
+.next
+/data
+node_modules
+old/*
+.idea
+.vercel
+temp
+supabase/_migrations
+supabase/.branches
+supabase/.temp
+supabase/_seed.sql
