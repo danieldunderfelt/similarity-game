@@ -34,6 +34,10 @@ BEGIN
 END;
 $$;
 
+-- Update the result column to ensure it can store numbers with high precision
+ALTER TABLE matches 
+  ALTER COLUMN result TYPE DECIMAL(10, 6);
+
 -- Enable Row Level Security on tables
 ALTER TABLE texts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE matches ENABLE ROW LEVEL SECURITY;
