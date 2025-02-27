@@ -62,18 +62,18 @@ export default function SimilaritySlider({ value, onChange, onSubmit }: Similari
   document.head.appendChild(styleTag)
 
   return (
-    <div className="mx-auto mt-16 mb-12 w-full max-w-5xl px-6">
-      <div className="mb-10 text-center">
-        <div className="mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-6xl text-transparent">
+    <div className="mx-auto mt-10 mb-12 flex w-full max-w-5xl flex-col items-center gap-4">
+      <div className="flex w-full flex-col items-center gap-10 text-center">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-6xl text-transparent tabular-nums">
           {displayValue}
         </div>
-        <div className="mt-4 flex justify-between font-medium text-gray-600 text-lg">
+        <div className="flex w-full justify-between font-medium text-gray-600 text-lg">
           <span className="ml-2">Not similar at all</span>
           <span className="mr-2">Synonymous</span>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-gray-100 p-8 shadow-inner">
+      <div className="w-full space-y-6 rounded-2xl bg-gray-100 px-4 py-6 shadow-inner">
         <input
           type="range"
           min="0"
@@ -88,7 +88,7 @@ export default function SimilaritySlider({ value, onChange, onSubmit }: Similari
           }}
         />
 
-        <div className="mt-4 flex justify-between px-2 font-medium text-gray-600 text-sm">
+        <div className="flex justify-between px-2 font-medium text-gray-600 text-sm">
           <span>0</span>
           <span>1</span>
           <span>2</span>
@@ -106,7 +106,7 @@ export default function SimilaritySlider({ value, onChange, onSubmit }: Similari
       <button
         type="button"
         onClick={onSubmit}
-        className="mt-10 w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-5 font-bold text-white text-xl shadow-lg transition duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-xl">
+        className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-5 font-bold text-white text-xl shadow-lg transition duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-xl">
         Submit Rating
       </button>
     </div>

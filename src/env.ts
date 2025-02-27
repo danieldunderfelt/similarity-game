@@ -8,8 +8,8 @@ export const env = createEnv({
   },
   clientPrefix: 'PUBLIC_',
   runtimeEnv: {
-    PUBLIC_SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL,
-    PUBLIC_SUPABASE_ANON_KEY: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+    PUBLIC_SUPABASE_URL: import.meta.env['PUBLIC_SUPABASE_URL'],
+    PUBLIC_SUPABASE_ANON_KEY: import.meta.env['PUBLIC_SUPABASE_ANON_KEY'],
   },
   emptyStringAsUndefined: true,
 })

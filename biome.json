@@ -12,7 +12,8 @@
         "noUnusedTemplateLiteral": "off"
       },
       "complexity": {
-        "noForEach": "off"
+        "noForEach": "off",
+        "useLiteralKeys": "off"
       },
       "suspicious": {
         "noPrototypeBuiltins": "off",

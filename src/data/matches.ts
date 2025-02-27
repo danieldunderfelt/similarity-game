@@ -10,6 +10,35 @@ type MatchWithTexts = Match & {
   text2: Pick<Text, 'id' | 'text'>
 }
 
+// Get or create a session ID from localStorage
+const getSessionId = () => {
+  const STORAGE_KEY = 'similarity_game_session_id'
+  let sessionId = localStorage.getItem(STORAGE_KEY)
+
+  if (!sessionId) {
+    sessionId = crypto.randomUUID()
+    localStorage.setItem(STORAGE_KEY, sessionId)
+  }
+
+  return sessionId
+}
+
+// Session ID for the current browser
+const SESSION_ID = getSessionId()
+
+// Storage key for current match
+const CURRENT_MATCH_KEY = 'similarity_game_current_match'
+
+// Store the current match ID in localStorage
+export const storeCurrentMatchId = (matchId: string) => {
+  localStorage.setItem(CURRENT_MATCH_KEY, matchId)
+}
+
+// Get the current match ID from localStorage
+export const getCurrentMatchId = (): string | null => {
+  return localStorage.getItem(CURRENT_MATCH_KEY)
+}
+
 // Get a match by ID along with its associated texts
 export const useMatch = (matchId: string | null) => {
   return useQuery({
@@ -32,19 +61,46 @@ export const useMatch = (matchId: string | null) => {
   })
 }
 
-// Create a new random match
-export const useCreateRandomMatch = () => {
+// Checkout an existing match
+export const useCheckoutMatch = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (matchId: string) => {
+      const { data, error } = await supabase
+        .from('matches')
+        .update({
+          checkout_at: new Date().toISOString(),
+          checkout_session_id: SESSION_ID,
+        })
+        .eq('id', matchId)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data.id as string
+    },
+    onSuccess: (matchId) => {
+      queryClient.invalidateQueries({ queryKey: ['match', matchId] })
+      storeCurrentMatchId(matchId)
+    },
+  })
+}
+
+// Get or create a match with checkout
+export const useGetOrCreateMatch = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('create_random_match')
+      const { data, error } = await supabase.rpc('get_or_create_match', { session_id: SESSION_ID })
 
       if (error) throw error
       return data as string // Returns the match ID
     },
     onSuccess: (matchId) => {
       queryClient.invalidateQueries({ queryKey: ['match', matchId] })
+      storeCurrentMatchId(matchId)
     },
   })
 }
