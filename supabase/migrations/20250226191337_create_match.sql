@@ -92,6 +92,49 @@ BEGIN
 END;
 $$;
 
+-- Function to get statistics for a pair of traits
+CREATE OR REPLACE FUNCTION get_trait_pair_stats(text_id_1 UUID, text_id_2 UUID)
+RETURNS TABLE (
+  count BIGINT,
+  average_result DECIMAL(10, 6)
+)
+LANGUAGE plpgsql
+SECURITY INVOKER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    COUNT(*)::BIGINT,
+    AVG(result)::DECIMAL(10, 6)
+  FROM 
+    matches
+  WHERE 
+    result IS NOT NULL AND
+    (
+      (text_1 = text_id_1 AND text_2 = text_id_2) OR
+      (text_1 = text_id_2 AND text_2 = text_id_1)
+    );
+END;
+$$;
+
+-- Function to count matches rated by a specific session
+CREATE OR REPLACE FUNCTION get_session_rated_count(session_id TEXT)
+RETURNS BIGINT
+LANGUAGE plpgsql
+SECURITY INVOKER
+AS $$
+DECLARE
+  count BIGINT;
+BEGIN
+  SELECT COUNT(*)::BIGINT INTO count
+  FROM matches
+  WHERE 
+    checkout_session_id = session_id AND
+    result IS NOT NULL;
+    
+  RETURN count;
+END;
+$$;
 
 -- Enable Row Level Security on tables
 ALTER TABLE texts ENABLE ROW LEVEL SECURITY;

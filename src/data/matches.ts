@@ -10,6 +10,12 @@ type MatchWithTexts = Match & {
   text2: Pick<Text, 'id' | 'text'>
 }
 
+// Types for the stats
+export type TraitPairStats = {
+  count: number
+  averageResult: number
+}
+
 // Get or create a session ID from localStorage
 const getSessionId = () => {
   const STORAGE_KEY = 'similarity_game_session_id'
@@ -37,6 +43,11 @@ export const storeCurrentMatchId = (matchId: string) => {
 // Get the current match ID from localStorage
 export const getCurrentMatchId = (): string | null => {
   return localStorage.getItem(CURRENT_MATCH_KEY)
+}
+
+// Clear the current match ID from localStorage
+export const clearCurrentMatchId = () => {
+  localStorage.removeItem(CURRENT_MATCH_KEY)
 }
 
 // Get a match by ID along with its associated texts
@@ -123,6 +134,51 @@ export const useUpdateMatchResult = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['match', data.id] })
+      queryClient.invalidateQueries({ queryKey: ['traitPairStats'] })
+      queryClient.invalidateQueries({ queryKey: ['sessionRatedCount', SESSION_ID] })
+    },
+  })
+}
+
+// Get statistics for a pair of traits
+export const useTraitPairStats = (text1Id: string | undefined, text2Id: string | undefined) => {
+  return useQuery({
+    queryKey: ['traitPairStats', text1Id, text2Id],
+    queryFn: async () => {
+      if (!text1Id || !text2Id) return null
+
+      const { data, error } = await supabase.rpc('get_trait_pair_stats', {
+        text_id_1: text1Id,
+        text_id_2: text2Id,
+      })
+
+      if (error) throw error
+
+      // The function returns an array with a single row
+      if (data && data.length > 0) {
+        return {
+          count: data[0].count,
+          averageResult: data[0].average_result,
+        } as TraitPairStats
+      }
+
+      return { count: 0, averageResult: 0 } as TraitPairStats
+    },
+    enabled: !!text1Id && !!text2Id,
+  })
+}
+
+// Get count of matches rated by the current session
+export const useSessionRatedCount = () => {
+  return useQuery({
+    queryKey: ['sessionRatedCount', SESSION_ID],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_session_rated_count', {
+        session_id: SESSION_ID,
+      })
+
+      if (error) throw error
+      return data as number
     },
   })
 }

@@ -4,9 +4,15 @@ interface SimilaritySliderProps {
   value: number
   onChange: (value: number) => void
   onSubmit: () => void
+  isSubmitting?: boolean
 }
 
-export default function SimilaritySlider({ value, onChange, onSubmit }: SimilaritySliderProps) {
+export default function SimilaritySlider({
+  value,
+  onChange,
+  onSubmit,
+  isSubmitting = false,
+}: SimilaritySliderProps) {
   const [displayValue, setDisplayValue] = useState(value.toFixed(3))
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,10 +87,13 @@ export default function SimilaritySlider({ value, onChange, onSubmit }: Similari
           step="0.001"
           value={value}
           onChange={handleChange}
+          disabled={isSubmitting}
           className="h-6 w-full cursor-pointer appearance-none rounded-full"
           style={{
             background,
             WebkitAppearance: 'none',
+            opacity: isSubmitting ? '0.7' : '1',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
           }}
         />
 
@@ -106,8 +115,9 @@ export default function SimilaritySlider({ value, onChange, onSubmit }: Similari
       <button
         type="button"
         onClick={onSubmit}
-        className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-5 font-bold text-white text-xl shadow-lg transition duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-xl">
-        Submit Rating
+        disabled={isSubmitting}
+        className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-5 font-bold text-white text-xl shadow-lg transition duration-300 ease-in-out hover:translate-y-[-2px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70">
+        {isSubmitting ? 'Submitting...' : 'Submit Rating'}
       </button>
     </div>
   )

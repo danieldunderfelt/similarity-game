@@ -5,6 +5,8 @@ export type Database = {
     Tables: {
       matches: {
         Row: {
+          checkout_at: string | null
+          checkout_session_id: string | null
           created_at: string
           id: string
           result: number | null
@@ -12,6 +14,8 @@ export type Database = {
           text_2: string
         }
         Insert: {
+          checkout_at?: string | null
+          checkout_session_id?: string | null
           created_at?: string
           id?: string
           result?: number | null
@@ -19,6 +23,8 @@ export type Database = {
           text_2: string
         }
         Update: {
+          checkout_at?: string | null
+          checkout_session_id?: string | null
           created_at?: string
           id?: string
           result?: number | null
@@ -71,6 +77,28 @@ export type Database = {
       create_random_match: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_or_create_match: {
+        Args: {
+          session_id: string
+        }
+        Returns: string
+      }
+      get_session_rated_count: {
+        Args: {
+          session_id: string
+        }
+        Returns: number
+      }
+      get_trait_pair_stats: {
+        Args: {
+          text_id_1: string
+          text_id_2: string
+        }
+        Returns: {
+          count: number
+          average_result: number
+        }[]
       }
     }
     Enums: {
