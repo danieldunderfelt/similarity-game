@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import Collapsible from './components/Collapsible'
 import LoadingScreen from './components/LoadingScreen'
 import ResultsScreen from './components/ResultsScreen'
 import SimilaritySlider from './components/SimilaritySlider'
@@ -182,32 +183,37 @@ function SimilarityGame() {
     }
   }
 
-  // Show loading if we're waiting for match data
-  if (isMatchLoading || !currentMatch) {
-    return <LoadingScreen />
-  }
+  const [defaultExpanded, setDefaultExpanded] = useStoredState<boolean>(
+    'similarity_game_default_expanded',
+    true,
+    undefined,
+    sessionStorage,
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-blue-50 py-12">
-      <div className="mx-auto flex max-w-3xl flex-col gap-12 px-6">
-        <header className="flex flex-col items-center gap-8">
-          <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-extrabold text-5xl text-transparent leading-loose">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 sm:gap-12 sm:px-6">
+        <header className="flex flex-col items-center gap-6 sm:gap-8">
+          <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-extrabold text-3xl text-transparent leading-normal sm:text-5xl">
             Trait Similarity Game
           </h1>
-          <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-gray-700">
-            <p className="text-xl leading-relaxed">
-              Compare the two traits below and rate how similar they are on a scale from 0 to 10.
-              How you define "similarity" is up to you! Consider the following questions:
-            </p>
-            <ul className="list-disc pl-5">
-              <li>How close are the literal meanings?</li>
-              <li>How often do the traits appear in the same context?</li>
-              <li>
-                If you are looking for an item with one trait, would that item also have the other
-                trait?
-              </li>
-            </ul>
-          </div>
+          <Collapsible
+            previewHeight={60}
+            defaultExpanded={defaultExpanded}
+            onToggle={setDefaultExpanded}
+            buttonClassName="text-gray-500 text-sm transition-colors mt-2 focus:outline-none">
+            <div className="mx-auto flex max-w-3xl flex-col items-start gap-4 text-gray-700">
+              <p className="text-base leading-relaxed sm:text-xl">
+                Compare the two traits below and rate how similar they are on a scale from 0 to 10.
+                How you define "similarity" is up to you! Consider the following questions:
+              </p>
+              <ul className="list-disc pl-4 text-sm sm:pl-6 sm:text-base">
+                <li>How close are the literal meanings?</li>
+                <li>How often do the traits appear in the same context?</li>
+                <li>If something has one trait, would it also have the other trait?</li>
+              </ul>
+            </div>
+          </Collapsible>
           <div className="flex justify-center">
             <div className="inline-flex items-center rounded-full bg-purple-100 px-4 py-2 font-medium text-purple-700 text-sm">
               <span className="mr-2">🏆</span>
@@ -216,45 +222,49 @@ function SimilarityGame() {
           </div>
         </header>
 
-        <TextComparison text1={currentMatch.text1.text} text2={currentMatch.text2.text} />
+        {currentMatch && (
+          <>
+            {/* Similarity rating slider or results screen based on game state */}
+            {gameState === 'rating' && (
+              <div className="flex flex-col items-center gap-8">
+                <div className="flex flex-col items-center gap-2">
+                  <h2 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-center font-bold text-transparent text-xl">
+                    How similar are these traits?
+                  </h2>
+                  <p className="px-4 text-center text-gray-600 text-sm">
+                    Move the slider to rate the similarity between the pair of traits.
+                  </p>
+                </div>
 
-        {/* Similarity rating slider or results screen based on game state */}
-        {gameState === 'rating' && (
-          <div className="flex flex-col items-center gap-8">
-            <div className="flex flex-col items-center gap-2">
-              <h2 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-center font-bold text-2xl text-transparent">
-                How similar are these traits?
-              </h2>
-              <p className="text-center text-gray-600">
-                Move the slider to rate the similarity between the traits above
-              </p>
-            </div>
-            <SimilaritySlider
-              value={similarityValue}
-              onChange={setSimilarityValue}
-              onSubmit={handleSubmitRating}
-              isSubmitting={isSubmitting}
-            />
-          </div>
+                <TextComparison text1={currentMatch.text1.text} text2={currentMatch.text2.text} />
+
+                <SimilaritySlider
+                  value={similarityValue}
+                  onChange={setSimilarityValue}
+                  onSubmit={handleSubmitRating}
+                  isSubmitting={isSubmitting}
+                />
+              </div>
+            )}
+
+            {gameState === 'results' && lastRating !== null && (
+              <>
+                <TextComparison text1={currentMatch.text1.text} text2={currentMatch.text2.text} />
+                <ResultsScreen
+                  userRating={lastRating}
+                  stats={traitPairStats || null}
+                  text1={currentMatch.text1.text}
+                  text2={currentMatch.text2.text}
+                  onNextPair={handleNextPair}
+                />
+              </>
+            )}
+          </>
         )}
-
-        {gameState === 'results' && lastRating !== null && (
-          <ResultsScreen
-            userRating={lastRating}
-            stats={traitPairStats || null}
-            text1={currentMatch.text1.text}
-            text2={currentMatch.text2.text}
-            onNextPair={handleNextPair}
-          />
-        )}
-
-        <footer className="text-center text-gray-500">
-          <p>Helping to train AI models with human feedback since 2023</p>
-        </footer>
       </div>
 
       {/* Loading overlay - only show for initial loading, not during submission */}
-      {isLoading && <LoadingScreen />}
+      {(isLoading || isMatchLoading || !currentMatch) && <LoadingScreen />}
     </div>
   )
 }

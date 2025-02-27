@@ -6,11 +6,11 @@ interface StoredValue<T> {
   expiresAt?: number
 }
 
-export function useStoredState<T>(key: string, initialValue: T, ttl?: number) {
+export function useStoredState<T>(key: string, initialValue: T, ttl?: number, storage?: Storage) {
   const [value, setValue] = useState<T | undefined>(undefined)
 
   const refreshValue = useCallback(() => {
-    storageGet<StoredValue<T>>(key).then((stored) => {
+    storageGet<StoredValue<T>>(key, storage).then((stored) => {
       if (stored) {
         const now = Date.now()
         if (!stored.expiresAt || stored.expiresAt > now) {
@@ -22,7 +22,7 @@ export function useStoredState<T>(key: string, initialValue: T, ttl?: number) {
         setValue(initialValue)
       }
     })
-  }, [key, initialValue])
+  }, [key, initialValue, storage])
 
   useEffect(() => {
     refreshValue()
@@ -35,13 +35,13 @@ export function useStoredState<T>(key: string, initialValue: T, ttl?: number) {
         expiresAt: ttl ? Date.now() + ttl : undefined,
       }
 
-      storageSet(key, storedValue)
+      storageSet(key, storedValue, storage)
     }
-  }, [key, value, ttl])
+  }, [key, value, ttl, storage])
 
   const reset = useCallback(() => {
-    storageRemove(key).then(() => setValue(initialValue))
-  }, [key, initialValue])
+    storageRemove(key, storage).then(() => setValue(initialValue))
+  }, [key, initialValue, storage])
 
   return [value, setValue, reset] as const
 }

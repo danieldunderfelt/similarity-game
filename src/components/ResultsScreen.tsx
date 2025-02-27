@@ -24,8 +24,11 @@ export default function ResultsScreen({
   const formattedDifference = Math.abs(difference).toFixed(3)
   const differenceDirection = difference > 0 ? 'higher' : difference < 0 ? 'lower' : 'the same as'
 
+  // Check if the user is the only rater (count is 0 or 1)
+  const isFirstRater = ratingCount <= 1 || Math.abs(userRating - averageRating) < 0.0001
+
   return (
-    <div className="flex flex-col items-center gap-10 py-6">
+    <div className="flex flex-col items-center gap-6 sm:gap-10 sm:py-6">
       <div className="flex flex-col items-center gap-6 text-center">
         <h2 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-2xl text-transparent">
           Your Rating Results
@@ -39,29 +42,25 @@ export default function ResultsScreen({
             </span>
           </div>
 
-          {ratingCount > 0 && (
+          {!isFirstRater && (
             <>
               <div className="text-3xl text-gray-400">vs</div>
 
               <div className="flex flex-col items-center gap-2">
-                <span className="text-gray-600 text-sm">
-                  Average ({ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'})
-                </span>
+                <span className="text-gray-600 text-sm">Average ({ratingCount} ratings)</span>
                 <span className="font-bold text-4xl text-gray-700">{averageRating.toFixed(3)}</span>
               </div>
             </>
           )}
         </div>
 
-        {ratingCount > 0 && (
+        {isFirstRater ? (
+          <p className="mt-2 text-gray-600">You're the first person to rate this pair!</p>
+        ) : (
           <p className="mt-2 text-gray-600">
             Your rating is <span className="font-medium">{formattedDifference}</span> points{' '}
             <span className="font-medium">{differenceDirection}</span> the average.
           </p>
-        )}
-
-        {ratingCount === 0 && (
-          <p className="mt-2 text-gray-600">You're the first person to rate this pair!</p>
         )}
       </div>
 

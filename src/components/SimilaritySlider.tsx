@@ -68,7 +68,7 @@ export default function SimilaritySlider({
   document.head.appendChild(styleTag)
 
   return (
-    <div className="mx-auto mt-10 mb-12 flex w-full max-w-5xl flex-col items-center gap-4">
+    <div className="mx-auto mb-12 flex w-full max-w-5xl flex-col items-center gap-4">
       <div className="flex w-full flex-col items-center gap-10 text-center">
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-6xl text-transparent tabular-nums">
           {displayValue}
