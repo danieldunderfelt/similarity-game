@@ -4,18 +4,10 @@ import { Button } from './ui/button'
 interface ResultsScreenProps {
   userRating: number
   stats: TraitPairStats | null
-  text1: string
-  text2: string
   onNextPair: () => void
 }
 
-export default function ResultsScreen({
-  userRating,
-  stats,
-  text1,
-  text2,
-  onNextPair,
-}: ResultsScreenProps) {
+export default function ResultsScreen({ userRating, stats, onNextPair }: ResultsScreenProps) {
   const averageRating = stats?.averageResult ?? 0
   const ratingCount = stats?.count ?? 0
 

@@ -253,8 +253,6 @@ function SimilarityGame() {
                 <ResultsScreen
                   userRating={lastRating}
                   stats={traitPairStats || null}
-                  text1={currentMatch.text1.text}
-                  text2={currentMatch.text2.text}
                   onNextPair={handleNextPair}
                 />
               </>
